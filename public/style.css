@@ -1,0 +1,238 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #282c34;
+    color: #f0f0f0;
+    text-align: center;
+    overflow: hidden; /* For confetti animation */
+}
+
+#game-container {
+    background-color: #3a3f47;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    max-width: 90%;
+    width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+h1 {
+    color: #61dafb;
+    margin-bottom: 20px;
+}
+
+.section {
+    padding: 15px;
+    border: 1px solid #444;
+    border-radius: 8px;
+    background-color: #30343a;
+}
+
+.input-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+label {
+    margin-bottom: 5px;
+    font-size: 0.9em;
+    color: #bbb;
+}
+
+input[type="text"] {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #555;
+    border-radius: 5px;
+    background-color: #40454d;
+    color: #f0f0f0;
+    font-size: 1em;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: #61dafb;
+    box-shadow: 0 0 5px rgba(97, 218, 251, 0.5);
+}
+
+button {
+    background-color: #61dafb;
+    color: #282c34;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #52c1e8;
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button#cancel-online-btn {
+    background-color: #ef5350;
+    color: white;
+}
+
+button#cancel-online-btn:hover {
+    background-color: #d84315;
+}
+
+#status {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #a0a0a0;
+}
+
+#board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 300px;
+    height: 300px;
+    margin: 20px auto;
+    background-color: #222;
+    border: 2px solid #61dafb;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.cell {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 3em;
+    font-weight: bold;
+    color: #61dafb;
+    border: 1px solid #444;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.cell:hover {
+    background-color: rgba(97, 218, 251, 0.1);
+}
+
+.cell.X {
+    color: #ef5350; /* Red for X */
+}
+
+.cell.O {
+    color: #42a5f5; /* Blue for O */
+}
+
+#game-over-message {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #e0e0e0;
+}
+
+#play-again-prompt p {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+#play-again-prompt button {
+    margin: 0 10px;
+}
+
+#thanks-message {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Celebration Animation - Confetti */
+#celebration {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #61dafb; /* Default confetti color */
+    opacity: 0;
+    animation: confetti-fall 3s ease-out forwards;
+    animation-delay: var(--delay);
+    border-radius: 50%;
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+}
+
+.confetti:nth-child(2n) { background-color: #ef5350; }
+.confetti:nth-child(3n) { background-color: #ffeb3b; }
+.confetti:nth-child(4n) { background-color: #42a5f5; }
+.confetti:nth-child(5n) { background-color: #66bb6a; }
+
+@keyframes confetti-fall {
+    0% {
+        transform: translate(var(--x, 0), var(--y, 0)) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--final-x), 100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    #game-container {
+        padding: 20px;
+        width: 100%;
+        border-radius: 0;
+        box-shadow: none;
+    }
+    #board {
+        width: 270px;
+        height: 270px;
+    }
+    .cell {
+        width: 90px;
+        height: 90px;
+        font-size: 2.5em;
+    }
+    h1 {
+        font-size: 1.8em;
+    }
+    button {
+        padding: 10px 15px;
+        font-size: 0.9em;
+    }
+}
