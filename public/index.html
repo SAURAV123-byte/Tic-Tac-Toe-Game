@@ -3,34 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe</title>
+    <title>Tic Tac Toe - Advanced Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
-        <h1>Tic Tac Toe</h1>
+        <h1>🎮 Tic Tac Toe</h1>
 
         <!-- Mode Selection -->
         <div id="mode-selection" class="section">
-            <button id="offline-mode-btn">Offline Two-Player</button>
-            <button id="online-mode-btn">Online Multiplayer</button>
+            <h2>Select Game Mode</h2>
+            <button id="offline-two-player-btn" class="mode-btn">👥 Two Player (Offline)</button>
+            <button id="offline-ai-btn" class="mode-btn">🤖 Play vs AI</button>
+            <button id="online-mode-btn" class="mode-btn">🌐 Online Multiplayer</button>
         </div>
 
-        <!-- Name Input Section -->
-        <div id="name-input-section" class="section hidden">
-            <p>Enter player names:</p>
-            <div class="input-group">
-                <label for="player1-name">Player 1 (X):</label>
-                <input type="text" id="player1-name" value="Player 1" maxlength="15">
+        <!-- Settings Section -->
+        <div id="settings-section" class="section hidden">
+            <h2>Game Settings</h2>
+            
+            <!-- Board Size Selection -->
+            <div class="settings-group">
+                <label>Board Size:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="board-size" value="3" checked> 3×3</label>
+                    <label><input type="radio" name="board-size" value="4"> 4×4</label>
+                    <label><input type="radio" name="board-size" value="5"> 5×5</label>
+                </div>
             </div>
-            <div class="input-group">
-                <label for="player2-name">Player 2 (O):</label>
+
+            <!-- First to N Wins -->
+            <div class="settings-group">
+                <label for="first-to-n">First to N Wins:</label>
+                <input type="number" id="first-to-n" min="1" max="10" value="1">
+            </div>
+
+            <!-- AI Difficulty (if AI mode) -->
+            <div id="ai-difficulty-section" class="settings-group hidden">
+                <label>AI Difficulty:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="ai-difficulty" value="easy" checked> 🟢 Easy (Random moves)</label>
+                    <label><input type="radio" name="ai-difficulty" value="medium"> 🟡 Medium (Smart blocking)</label>
+                    <label><input type="radio" name="ai-difficulty" value="hard"> 🔴 Hard/Impossible (Minimax)</label>
+                </div>
+            </div>
+
+            <!-- Customization -->
+            <div class="settings-group">
+                <label>Customization:</label>
+                <div class="custom-group">
+                    <label for="player1-symbol">Player 1 Symbol:</label>
+                    <input type="text" id="player1-symbol" maxlength="1" value="X">
+                </div>
+                <div class="custom-group">
+                    <label for="player2-symbol">Player 2 Symbol:</label>
+                    <input type="text" id="player2-symbol" maxlength="1" value="O">
+                </div>
+                <div class="custom-group">
+                    <label for="board-color">Board Color:</label>
+                    <input type="color" id="board-color" value="#222222">
+                </div>
+                <div class="custom-group">
+                    <label for="player1-color">Player 1 Color:</label>
+                    <input type="color" id="player1-color" value="#ef5350">
+                </div>
+                <div class="custom-group">
+                    <label for="player2-color">Player 2 Color:</label>
+                    <input type="color" id="player2-color" value="#42a5f5">
+                </div>
+                <div class="custom-group">
+                    <label><input type="checkbox" id="sound-toggle" checked> Sound Effects</label>
+                </div>
+            </div>
+
+            <!-- Player Names -->
+            <div class="settings-group">
+                <label for="player1-name">Player 1 Name:</label>
+                <input type="text" id="player1-name" value="Player 1" maxlength="15">
+                <label for="player2-name" id="player2-label">Player 2 Name:</label>
                 <input type="text" id="player2-name" value="Player 2" maxlength="15">
             </div>
-            <button id="start-game-btn">Start Game</button>
+
+            <button id="start-game-btn" class="btn-primary">Start Game</button>
+            <button id="back-btn" class="btn-secondary">Back</button>
         </div>
 
-        <!-- Online Waiting/Status Section -->
+        <!-- Online Status Section -->
         <div id="online-status-section" class="section hidden">
             <p id="online-message"></p>
             <button id="cancel-online-btn" class="hidden">Cancel</button>
@@ -38,29 +96,55 @@
 
         <!-- Game Section -->
         <div id="game-section" class="section hidden">
+            <!-- Scoreboard -->
+            <div id="scoreboard" class="scoreboard">
+                <div class="score-item">
+                    <span id="p1-score-name">Player 1</span>
+                    <span id="p1-score" class="score-value">0</span>
+                </div>
+                <div class="vs-text">VS</div>
+                <div class="score-item">
+                    <span id="p2-score-name">Player 2</span>
+                    <span id="p2-score" class="score-value">0</span>
+                </div>
+            </div>
+
             <div id="status"></div>
-            <div id="board" class="grid">
-                <div class="cell" data-cell-index="0"></div>
-                <div class="cell" data-cell-index="1"></div>
-                <div class="cell" data-cell-index="2"></div>
-                <div class="cell" data-cell-index="3"></div>
-                <div class="cell" data-cell-index="4"></div>
-                <div class="cell" data-cell-index="5"></div>
-                <div class="cell" data-cell-index="6"></div>
-                <div class="cell" data-cell-index="7"></div>
-                <div class="cell" data-cell-index="8"></div>
+            
+            <div id="game-content">
+                <!-- Board -->
+                <div id="board-container">
+                    <div id="board" class="grid"></div>
+                </div>
+                
+                <!-- Game Controls -->
+                <div id="game-controls">
+                    <button id="undo-btn" class="control-btn">↶ Undo Move</button>
+                    <button id="restart-btn" class="control-btn">🔄 Restart Game</button>
+                    <button id="home-btn" class="control-btn">🏠 Home</button>
+                </div>
+
+                <!-- Chat Section -->
+                <div id="chat-section">
+                    <div id="chat-messages"></div>
+                    <div id="chat-input-area">
+                        <input type="text" id="chat-input" placeholder="Type a message..." maxlength="100">
+                        <button id="send-chat-btn">Send</button>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Game Over Section -->
         <div id="game-over-section" class="section hidden">
             <p id="game-over-message"></p>
-            <div id="play-again-prompt">
+            <div id="play-again-prompt" class="hidden">
                 <p>Do you want to play again?</p>
-                <button id="yes-btn">Yes</button>
-                <button id="no-btn">No</button>
+                <button id="yes-btn" class="btn-primary">Yes</button>
+                <button id="no-btn" class="btn-secondary">No</button>
             </div>
             <p id="thanks-message" class="hidden">Thanks for playing!</p>
+            <button id="match-end-btn" class="hidden btn-primary">Go to Home</button>
         </div>
     </div>
 
@@ -79,6 +163,6 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="script.js"></script>
+    <script src="script-new.js"></script>
 </body>
 </html>

@@ -25,6 +25,11 @@ const thanksMessage = document.getElementById('thanks-message');
 
 const celebrationContainer = document.getElementById('celebration');
 
+// --- Chat DOM Elements ---
+const chatMessagesContainer = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const sendChatBtn = document.getElementById('send-chat-btn');
+
 // --- Game State Variables ---
 let gameMode = null; // 'offline' or 'online'
 let board = ['', '', '', '', '', '', '', '', ''];
@@ -65,12 +70,59 @@ function updateStatus(message) {
     statusDisplay.textContent = message;
 }
 
+function addMessageToChat(playerName, message, isOwn = false) {
+    const messageDiv = document.createElement('div');
+    messageDiv.classList.add('chat-message');
+    messageDiv.classList.add(isOwn ? 'own' : 'other');
+
+    const nameSpan = document.createElement('div');
+    nameSpan.classList.add('player-name');
+    nameSpan.textContent = playerName;
+
+    const textSpan = document.createElement('div');
+    textSpan.classList.add('message-text');
+    textSpan.textContent = message;
+
+    const timeSpan = document.createElement('div');
+    timeSpan.classList.add('message-time');
+    const now = new Date();
+    timeSpan.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+    messageDiv.appendChild(nameSpan);
+    messageDiv.appendChild(textSpan);
+    messageDiv.appendChild(timeSpan);
+
+    chatMessagesContainer.appendChild(messageDiv);
+    // Auto scroll to the bottom
+    chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
+}
+
+function sendChatMessage() {
+    const message = chatInput.value.trim();
+    if (!message) return;
+
+    if (gameMode === 'offline') {
+        // In offline mode, just add message locally
+        addMessageToChat(player1Name, message, true);
+    } else if (gameMode === 'online') {
+        // In online mode, send via socket
+        socket.emit('sendMessage', { roomID: roomID, message: message, playerName: player1Name });
+        addMessageToChat(player1Name, message, true);
+    }
+    
+    chatInput.value = '';
+}
+
 function resetBoardUI() {
     boardCells.forEach(cell => {
         cell.textContent = '';
         cell.classList.remove('X', 'O');
         cell.classList.remove('win-cell'); // Clear any winning highlight
     });
+}
+
+function resetChatUI() {
+    chatMessagesContainer.innerHTML = '';
 }
 
 function updateBoardUI() {
@@ -95,6 +147,7 @@ function initializeGame(mode, p1Name = 'Player 1', p2Name = 'Player 2', assigned
     currentPlayer = 'X'; // Always starts with X
     gameActive = true;
     resetBoardUI();
+    resetChatUI();
     hideCelebration();
     showSection(gameSection);
     gameOverSection.classList.add('hidden');
@@ -268,6 +321,14 @@ startGameBtn.addEventListener('click', () => {
 
 boardCells.forEach(cell => cell.addEventListener('click', handleCellClick));
 
+// Chat Event Listeners
+sendChatBtn.addEventListener('click', sendChatMessage);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendChatMessage();
+    }
+});
+
 yesBtn.addEventListener('click', () => {
     if (gameMode === 'offline') {
         initializeGame('offline', player1Name, player2Name);
@@ -337,6 +398,11 @@ function setupSocketListeners() {
         endGame(data.winner);
         player1Name = data.playerNames[playerSymbol]; // Ensure names are correct for game over message
         player2Name = data.playerNames[opponentSymbol];
+    });
+
+    socket.on('receiveMessage', (data) => {
+        const { playerName, message } = data;
+        addMessageToChat(playerName, message, false);
     });
 
     socket.on('opponentDisconnected', () => {

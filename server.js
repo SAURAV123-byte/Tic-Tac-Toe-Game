@@ -149,6 +149,24 @@ io.on('connection', (socket) => {
         }
     });
 
+    // --- Send Chat Message ---
+    socket.on('sendMessage', (data) => {
+        const { roomID, message, playerName } = data;
+        const room = rooms[roomID];
+
+        if (!room) {
+            console.warn(`Chat message attempt in non-existent room: ${roomID}`);
+            return;
+        }
+
+        // Broadcast message to all players in the room
+        io.to(roomID).emit('receiveMessage', {
+            playerName: playerName,
+            message: message
+        });
+        console.log(`Message in room ${roomID} from ${playerName}: ${message}`);
+    });
+
     // --- Player Wants to Play Again ---
     socket.on('playAgain', (data) => {
         const { roomID } = data;
